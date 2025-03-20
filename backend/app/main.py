@@ -59,18 +59,17 @@ def chunk_text(text, max_tokens=200):
 async def upload_content(request: UploadRequest):
     content = request.content.upper()
     try:
-        chunks = chunk_text(content, max_tokens=500)
+        supabase.table("documents").delete().neq("id", 0).execute()
+        chunks = chunk_text(content, max_tokens=50)
         for chunk in chunks:
-            print("chunk",chunk)
             response = client.embeddings.create(
                 input=chunk,
                 model="text-embedding-ada-002"
             )
             embedding = response.data[0].embedding            
-            print(embedding)
 
             data = {
-                "text": content,
+                "text": chunk,
                 "embedding": embedding
             }
             
