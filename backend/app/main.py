@@ -18,6 +18,9 @@ api_key = os.getenv("OPENAI_API_KEY")
 class UploadRequest(BaseModel):
     content: str
 
+class ChatRequest(BaseModel):
+    user_message: str
+
 
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -57,9 +60,8 @@ async def upload_content(request: UploadRequest):
     content = request.content.upper()
     try:
         chunks = chunk_text(content, max_tokens=500)
-        print(chunks)
         for chunk in chunks:
-            print(chunk)
+            print("chunk",chunk)
             response = client.embeddings.create(
                 input=chunk,
                 model="text-embedding-ada-002"
@@ -82,7 +84,9 @@ async def upload_content(request: UploadRequest):
 
 
 @app.post("/chat/")
-async def chat(user_message: str):
+async def chat(request: ChatRequest):
+    user_message = request.user_message.upper()
+
     try:
         response = client.embeddings.create(
             input=user_message,

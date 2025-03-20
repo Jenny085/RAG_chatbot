@@ -34,4 +34,13 @@ if uploaded_file:
     else:
         st.error("Failed to upload file")
 
+user_message = st.text_input("Enter your message")
+
+if st.button("Send"):
+    if user_message:
+        response = requests.post("http://127.0.0.1:8000/chat/", json={"user_message": str(user_message)})
+        response_placeholder = st.empty()
+        response_placeholder.write(response_text, unsafe_allow_html=True)
+
+
 
