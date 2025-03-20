@@ -1,0 +1,25 @@
+# Python ignores
+backend/.venv/
+streamlit/.venv/
+*.pyc
+__pycache__/
+*.log
+
+# Node.js ignores
+svelte-chatbot/node_modules/
+svelte-chatbot/.svelte-kit/
+svelte-chatbot/.npmrc
+svelte-chatbot/package-lock.json
+
+# Environment variables
+**/.env
+
+# Editor/IDE ignores
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Git ignores
+.git/
