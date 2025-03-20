@@ -78,41 +78,35 @@ async def upload_content(request: UploadRequest):
         return {"message": "Content uploaded successfully", "response": response.data}
     
     except Exception as e:
-        print(e)
         return {"error": str(e)}
 
 
 @app.post("/chat/")
 async def chat(request: ChatRequest):
     user_message = request.user_message.upper()
-
     try:
         response = client.embeddings.create(
             input=user_message,
             model="text-embedding-ada-002"
         )
         user_embedding = response.data[0].embedding
-
         query = supabase.rpc(
             'match_documents',
             {
                 'query_embedding': user_embedding,
-                'match_threshold': 0.7,
-                'match_count': 2
+                'match_threshold': 0.5,
+                'match_count': 5
             }
         ).execute()
-
-        similar_contents = [item['content'] for item in query.data]
-
+        similar_contents = [item['text'] for item in query.data]
         if similar_contents:
             response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[{
                     "role": "user", 
-                    "content": f"Based on the following content:\n{similar_contents}\n\nUser: {user_message}\n\nAI:"
+                    "content": f"Based on the following user resume content:\n{similar_contents}\n\nUser: {user_message}\n\nAI:"
                 }]
             )
-            
             return {
                 "message": response.choices[0].message.content,
                 "status": "success"

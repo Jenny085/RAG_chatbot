@@ -39,8 +39,14 @@ user_message = st.text_input("Enter your message")
 if st.button("Send"):
     if user_message:
         response = requests.post("http://127.0.0.1:8000/chat/", json={"user_message": str(user_message)})
+        if response.status_code == 200:
+            print(response.json())
+            response_text = response.json().get("message", "No response received")
+        else:
+            response_text = f"Error: {response.status_code} - {response.text}"
         response_placeholder = st.empty()
         response_placeholder.write(response_text, unsafe_allow_html=True)
+        
 
 
 
