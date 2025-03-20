@@ -3,9 +3,18 @@ import pandas as pd
 import requests
 import pdfplumber
 from io import BytesIO
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+
 
 st.title("Upload File to FastAPI")
 uploaded_file = st.file_uploader("Upload a file", type=["pdf", "csv", "xlsx"])
+
+SERVER_URL = os.getenv("BACKEND_URL")
+
 
 
 def extract_pdf_data(file: BytesIO):
@@ -27,7 +36,7 @@ if uploaded_file:
     else:
         st.error("Unsupported file type.")
         content = None
-    response = requests.post("http://127.0.0.1:8000/upload/", json={"content": str(content)})
+    response = requests.post(f"{SERVER_URL}/upload/", json={"content": str(content)})
 
     if response.status_code == 200:
         st.success(f"File uploaded: {uploaded_file.name}")
@@ -38,7 +47,7 @@ user_message = st.text_input("Enter your message")
 
 if st.button("Send"):
     if user_message:
-        response = requests.post("http://127.0.0.1:8000/chat/", json={"user_message": str(user_message)})
+        response = requests.post(f"{SERVER_URL}/chat/", json={"user_message": str(user_message)})
         if response.status_code == 200:
             response_text = response.json().get("message", "No response received")
         else:
